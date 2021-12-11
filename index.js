@@ -6,6 +6,10 @@ const getSchedule = async function (name) {
         headless: false,
         executablePath: 'C:/Program Files/Google/Chrome/Application/chrome.exe',
         DuserDataDir: 'C:/Users/vky/Documents/temp/chrome',
+        args: [
+            '--no-sandbox',
+            '--disable-setuid-sandbox',
+        ],
     };
 
     const browser = await puppeteer.launch(launchOptions);
@@ -85,7 +89,7 @@ const getSchedule = async function (name) {
 };
 const express = require('express')
 const app = express()
-const port = 3000
+const port = process.env.PORT || 3000
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 // app.use(express.static('public'))
