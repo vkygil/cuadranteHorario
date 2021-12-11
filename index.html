@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/selectize.js/0.13.3/css/selectize.css"
+        integrity="sha512-85w5tjZHguXpvARsBrIg9NWdNy5UBK16rAL8VWgnWXK2vMtcRKCBsHWSUbmMu0qHfXW2FVUDiWr6crA+IFdd1A=="
+        crossorigin="anonymous" referrerpolicy="no-referrer" />
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"
+        integrity="sha512-894YE6QWD5I59HgZOGReFYm4dnWc1Qt5NtvYSaNcOP+u1T9qYdvdihz0PPSiiqn/+/3e7Jo4EaG7TubfWGUrMQ=="
+        crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/selectize.js/0.13.3/js/standalone/selectize.min.js"
+        integrity="sha512-pF+DNRwavWMukUv/LyzDyDMn8U2uvqYQdJN0Zvilr6DDo/56xPDZdDoyPDYZRSL4aOKO/FGKXTpzDyQJ8je8Qw=="
+        crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/selectize.js/0.13.3/js/selectize.min.js"
+        integrity="sha512-JiDSvppkBtWM1f9nPRajthdgTCZV3wtyngKUqVHlAs0d5q72n5zpM3QMOLmuNws2vkYmmLn4r1KfnPzgC/73Mw=="
+        crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <style>
+        .selectx {
+            /* width:60% */
+        }
+
+        .imgContainer {
+            overflow: scroll;
+            margin: 0;
+        }
+
+        img {
+            width: 2000px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container-fluid">
+        <h2> select </h2>
+        <div class="row g-3">
+
+            <div class="col ">
+                <!-- <input type="text" class="form-control" id="inputPassword2" placeholder="Password"> -->
+                <select id="select-beast" class="  selectx" placeholder="Select a person...">
+
+                    <option value="THANA">THANA</option>
+                </select>
+            </div>
+            <div class="col-auto">
+                <button type="submit" class="btn btn-primary mb-3" onclick="searchIt()">Buscar</button>
+            </div>
+        </div>
+
+        <video id="loading" width="100%" muted loop autoplay style="filter: invert(1);">
+            <source src="vidi.mp4" type="video/mp4">
+        </video>
+        <div id="imgContainer" class="imgContainer">
+        </div>
+    </div>
+    <script>
+        $("#loading").toggle(false);
+
+        let names = ["CARLOS GIOVANNI GUALPA BARRE", " DANIEL FERNANDEZ ALMODOVAR", " JAVIER AURELIO JIMENEZ ALOMOTO", " ELVIS ERICK MARTINEZ MEREGILDO", " LUIS ALBERTO GARCÍA BULNES", " JUAN CARLOS BARRERA CANDEL", " JOSE MANUEL LOPEZ GONZALEZ", " TARIK SERHIR", " SANDRA MARTINEZ ARQUER", " JUAN CARLOS OSPINA ALVAREZ", " CRISTINA ALVAREZ GARCIA", " FRANCISCO JOSE CARACUEL LOPEZ", " GENESIS DENISSE CAÑIZARES ARIAS", " RAMIRO FRANCISCO MENENDEZ COBIS", " FRANCIS ELIZABETH SAA MEJIAS", " JUAN CAMILO MARTINEZ", " HECTOR PERERA", " LEON RAMSEY", " ANGEL OTERO", " JOSE ORLANDO CASTAÑEDA", " JHERSSON MAQUI SANCHEZ", " DAVID FERNANDO PRIETO BLANCO", " JOAQUIN ABEL GARCIA VERDE", " ANGEL SERRANO SIERRA", " RUPINDER SINGH SANDU", " KARAM KARAM", " ANDREA GIGLIO", " ALAN AJMONE", " AGUSTÍN FERRE ESCUDE", " JUAN SEBASTIAN CHAVARRO MOTTA", " JULES MEHDI SEBTI", " NORMAN SCHIAVON", " ARTURO SAMANIEGO PLETIKOSYC", " SALVATORE VACCARO", " ANA MESONES RIQUELME", " CRISTIAN MAURICIO VARELA ESCOBAR", " FRANCISCO RICARDO GUERRERO CHICAIZA", " JUAN AMAYA FRIAS", " YARIN ILICH GARCIA MACHADO", " ALEJANDRO HERNANDEZ BELTROL", " MUSTAPHA AKDAH", " SERGI GARCIA I CODONY", " IVAN HARO MARTINEZ", " ESTEBAN ANDRES CAPILLAY FERNANDEZ", " JHON OSPINA LOPEZ", " ROSA OLIVIA BRICEÑO", " LENIN ROMULO JIMENEZ PAIVA", " ALEXIS ANTONIO MONASTERIOS QUIJADA", " IGNAZIO JAVIER IMPALEA", " WILFREDO RICHARD GLENY DIAZ", " JAVIER GONZALEZ FERRER", " CARLOS NEPONUCENO INFANTE", " JORDI TARRES MURCIANO", " JOSE LUIS LEIRO MARTINEZ", " RACHID SBITI", " SERGI LLOBET I ROSSICH", " CARLOS EDUARDO RAMALLO", " MARCOS ALFREDO SUAREZ MARCILLO", " EDINSON ARMANDO CHAVEZ NÚÑEZ", " YIMMY ONEY VALENCIA ZAMORA", " RUBEN MARTINEZ NUÑEZ", " ALEJANDRO DIONY FERNÁNDEZ SOSA", " MANDIP SINGH KAUR", " FLORENCIO CARMONA LUQUE", " MAX SEÑOR", " BEIMAR LUISAGA ESCALERA", " IKER BERROYA MORENO", " IRAKSE IBAÑEZ DÍAZ", " PAU CABEZAS", " JERSON FABRICIO GUERRERO SIERRA", " LUIS FELIPE RIOSECO ZENTENO", " MICHAEL STEVEN CORREA ALVARADO", " EMANUEL SANTORO", " JERRY NAI GOMEZ MEDINA", " PRINCE GORAYA", " MARCOS ANTONIO RIVERO AVILA", " JONATHAN SANTOS RUBIERA", " MOHAMMAD ZAIN UL ABDIN HAMZA", " ZAKARIA BELHACHMI", " GALO ANDRES CARRILLO HERMIDA", " AHMED NOUMAN", " DIEGO LUIS RICCIARDI", " WALNER DANIEL SANCHEZ GIL", " RENATO PIERRO", " MIQUEL PUERTO SOTO", " ABEL ANDERSON MARTINS PERES", " VICTOR DELGADO HERNANDEZ", " CARLOS MARQUEZ MORENO", " FRANCISCO CARDACI", " BRANDON LUIS CHOEZ GUERRA", " MUHAMMAD NAEEM", " ALBERT SABATER MOLL", " AMY ADAMARY SAENZ INDIO", " STANISLAV BARABANOV", " ADRIA GARCIA I CLOSA", " MICHEL KHERI MARQUEZ GONZALEZ", " GIUSEPPE DAVID HERNANDEZ PEREZ", " ALDWIN ANTONIO AYALA MATEO", " THANA SINGH", " USAMA TARIQ", " FRANCISCO ANTONIO RODRIGUEZ GONZALEZ", " JOAQUIN NICOLAS RUBIO", " ALICIA FERNANDEZ MORON", " RODRIGO OSCAR NAVARRO", " LUIS ENRIQUE ARIAS RODRIGUEZ", " MARCOS GARCIA LOPEZ", " FRANKELYS JUNIOR TAVERAS RUBIERA", " ORAZIO ANDRES SALVATORE BELLO", " MAXIMILIANO PEREYRA SALSAMEDI", " JAIRO NUÑEZ ZUÑIGA", " RONALDO FERMIN GUZMAN RAMIREZ", " ANDREI BOGDAN", " RICHARSON PEREZ FAMILIA", " ANDRES ENRIQUE ARVELO GARCIA", " SERGIO FERNÁNDEZ JIMENEZ"]
+        let select = document.getElementById('select-beast');
+
+        for (let i = 0; i < names.length; i++) {
+            const element = names[i];
+            let opt = document.createElement('option');
+            opt.value = element;
+            opt.innerHTML = element;
+            select.appendChild(opt);
+
+        }
+        $('#select-beast').selectize({
+            create: true,
+            sortField: {
+                field: 'text',
+                direction: 'asc'
+            },
+            dropdownParent: 'body'
+        });
+
+        function searchIt() {
+            $("#loading").toggle(true);
+            fetch("/q/THANA").then(function (response) {
+                response.text().then(function (text) {
+                    $(".imgContainer").empty();
+                    $("#loading").toggle(false);
+                    $(".imgContainer").append(text);
+                });
+            });
+        }
+    </script>
+</body>
+
+</html>
