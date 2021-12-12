@@ -86,7 +86,7 @@
 
         function searchIt() {
             $("#loading").toggle(true);
-            fetch("/q/THANA").then(function (response) {
+            fetch("/q/" + document.querySelector("#select-beast").value).then(function (response) {
                 response.text().then(function (text) {
                     $(".imgContainer").empty();
                     $("#loading").toggle(false);
