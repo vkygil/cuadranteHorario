@@ -77,7 +77,8 @@ const getSchedule = async function (name) {
             });
         };
     }, name);
-    await page.waitForTimeout(3000)
+    // await page.waitForTimeout(3000)
+    await page.waitForTimeout(8000)
     // const frame = await (await page.$('#canvasTT')).contentFrame(); 
 
     let canvasData = await page.evaluate(_ => {
