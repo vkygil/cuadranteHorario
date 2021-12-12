@@ -1,11 +1,12 @@
-const puppeteer = require('puppeteer-core');
+// const puppeteer = require('puppeteer-core');
+const puppeteer = require('puppeteer');
 let canbasX;
 
 const getSchedule = async function (name) {
     let launchOptions = {
-        headless: false,
-        executablePath: 'C:/Program Files/Google/Chrome/Application/chrome.exe',
-        DuserDataDir: 'C:/Users/vky/Documents/temp/chrome',
+        // headless: false,
+        // executablePath: 'C:/Program Files/Google/Chrome/Application/chrome.exe',
+        // DuserDataDir: 'C:/Users/vky/Documents/temp/chrome',
         args: [
             '--no-sandbox',
             '--disable-setuid-sandbox',
