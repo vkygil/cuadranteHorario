@@ -1,5 +1,5 @@
-const puppeteer = require('puppeteer-core');
-// const puppeteer = require('puppeteer');
+// const puppeteer = require('puppeteer-core');
+const puppeteer = require('puppeteer');
 let dict = {};
 let namesVip = ["THANA SINGH", "HARJOT SINGH", "PRINCE GORAYA"]
 
@@ -23,7 +23,7 @@ const getSchedule = async function (name) {
         ],
     };
 
-    const browser = await puppeteer.launch(launchOptions);
+    const browser = await puppeteer.launch(launchOptionsH);
     const page = await browser.newPage();
 
     let gg = `
