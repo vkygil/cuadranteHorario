@@ -47,7 +47,7 @@
                 <!-- <input type="text" class="form-control" id="inputPassword2" placeholder="Password"> -->
                 <select id="select-beast" class="  selectx" placeholder="Select a person...">
 
-                    <option value="THANA">THANA</option>
+                    <option value="THANA SINGH">THANA SINGH</option>
                 </select>
             </div>
             <div class="col-auto">
@@ -86,7 +86,7 @@
 
         function searchIt() {
             $("#loading").toggle(true);
-            fetch("/q/" + document.querySelector("#select-beast").value).then(function (response) {
+            fetch("/cache/" + document.querySelector("#select-beast").value).then(function (response) {
                 response.text().then(function (text) {
                     $(".imgContainer").empty();
                     $("#loading").toggle(false);

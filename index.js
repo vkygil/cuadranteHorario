@@ -1,12 +1,22 @@
-// const puppeteer = require('puppeteer-core');
-const puppeteer = require('puppeteer');
-let canbasX;
+const puppeteer = require('puppeteer-core');
+// const puppeteer = require('puppeteer');
+let dict = {};
+let namesVip = ["THANA SINGH", "HARJOT SINGH", "PRINCE GORAYA"]
+
+
+
 
 const getSchedule = async function (name) {
     let launchOptions = {
-        // headless: false,
-        // executablePath: 'C:/Program Files/Google/Chrome/Application/chrome.exe',
-        // DuserDataDir: 'C:/Users/vky/Documents/temp/chrome',
+        headless: false,
+        executablePath: 'C:/Program Files/Google/Chrome/Application/chrome.exe',
+        DuserDataDir: 'C:/Users/vky/Documents/temp/chrome',
+        args: [
+            '--no-sandbox',
+            '--disable-setuid-sandbox',
+        ],
+    };
+    let launchOptionsH = {
         args: [
             '--no-sandbox',
             '--disable-setuid-sandbox',
@@ -78,7 +88,7 @@ const getSchedule = async function (name) {
         };
     }, name);
     // await page.waitForTimeout(3000)
-    await page.waitForTimeout(8000)
+    await page.waitForTimeout(5000)
     // const frame = await (await page.$('#canvasTT')).contentFrame(); 
 
     let canvasData = await page.evaluate(_ => {
@@ -89,6 +99,35 @@ const getSchedule = async function (name) {
     await browser.close()
     return canvasData
 };
+
+async function createSchedules() {
+
+    for (const name of namesVip) {
+        console.log("AUTO: started -" + name + "  ");
+
+        let sch = await getSchedule(name)
+        dict[name] = {
+            time: +Date.now(),
+            img: '<img src="' + sch + '" />'
+        };
+
+        console.log("AUTO: done - " + name + "  ");
+
+    }
+}
+
+let stopped = false;
+
+// infinite loop
+
+(async function () {
+    while (!stopped) {
+        await createSchedules()
+        await new Promise(resolve => setTimeout(resolve, 5 * 60 * 1000));
+
+    }
+})();
+
 const express = require('express')
 const app = express()
 const port = process.env.PORT || 3000
@@ -102,13 +141,36 @@ app.get('/', (req, res) => {
 
 })
 app.get('/q/:query', async (req, res) => {
-    console.log(req.params.query);
+    let name = req.params.query.trim()
+    console.log(name + " started");
 
     // res.setHeader('Content-Type', 'image/png');
     // res.sendFile(canbas)
-    let sch = await getSchedule(req.params.query)
-    res.send('<img src="' + sch + '" />')
+    let sch = await getSchedule(name)
+    dict[name] = {
+        time: +Date.now(),
+        img: '<img src="' + sch + '" />'
+    };
+
+    // res.send('<img src="' + sch + '" />')
+    res.send('done')
+    console.log(name + " done");
+
 })
+app.get('/cache/:query', async (req, res) => {
+    let name = req.params.query.trim()
+    if (dict[name])
+        res.send(dict[name].img)
+    else
+        res.send("NOT FOUND")
+
+
+})
+
+app.get('/cache', async (req, res) => {
+    res.send("Keys: " + Object.keys(dict))
+})
+
 
 app.listen(port, () => {
     console.log(`Example app listening at http://localhost:${port}`)
