@@ -2,33 +2,36 @@
 const puppeteer = require('puppeteer');
 let dict = {};
 let namesVip = ["THANA SINGH", "HARJOT SINGH", "PRINCE GORAYA"]
-
-
-
-
-const getSchedule = async function (name) {
-    let launchOptions = {
-        headless: false,
-        executablePath: 'C:/Program Files/Google/Chrome/Application/chrome.exe',
-        DuserDataDir: 'C:/Users/vky/Documents/temp/chrome',
-        args: [
-            '--no-sandbox',
-            '--disable-setuid-sandbox',
-        ],
-    };
-    let launchOptionsH = {
-        args: [
-            '--no-sandbox',
-            '--disable-setuid-sandbox',
-        ],
-    };
-
-    const browser = await puppeteer.launch(launchOptionsH);
-    const page = await browser.newPage();
-
-    let gg = `
+let launchOptions = {
+    headless: false,
+    executablePath: 'C:/Program Files/Google/Chrome/Application/chrome.exe',
+    DuserDataDir: 'C:/Users/vky/Documents/temp/chrome',
+    args: [
+        '--no-sandbox',
+        '--disable-setuid-sandbox',
+    ],
+};
+let launchOptionsH = {
+    args: [
+        '--no-sandbox',
+        '--disable-setuid-sandbox',
+    ],
+};
+let ggx = `
     https://docs.google.com/spreadsheets/u/0/d/1gPElP_uBKFwGkVr3eW1LxVk_nEZrN948XSZcm0q-Pio/preview/sheet?gid=446426204
     `
+let gg = `
+    https://docs.google.com/spreadsheets/u/0/d/1gPElP_uBKFwGkVr3eW1LxVk_nEZrN948XSZcm0q-Pio/preview/sheet?gid=1853312050
+    `
+
+let browser, page;
+//  = await puppeteer.launch(launchOptionsH);
+// let page = await browser.newPage();
+
+const getSchedule = async function (name) {
+
+
+
     await page.goto(gg);
     await page.waitForTimeout(1000)
     canbasX = await page.evaluate((name) => {
@@ -88,7 +91,7 @@ const getSchedule = async function (name) {
         };
     }, name);
     // await page.waitForTimeout(3000)
-    await page.waitForTimeout(5000)
+    await page.waitForTimeout(7000)
     // const frame = await (await page.$('#canvasTT')).contentFrame(); 
 
     let canvasData = await page.evaluate(_ => {
@@ -96,7 +99,7 @@ const getSchedule = async function (name) {
     })
     await page.waitForTimeout(1000)
 
-    await browser.close()
+    // await browser.close()
     return canvasData
 };
 
@@ -116,17 +119,7 @@ async function createSchedules() {
     }
 }
 
-let stopped = false;
 
-// infinite loop
-
-(async function () {
-    while (!stopped) {
-        await createSchedules()
-        await new Promise(resolve => setTimeout(resolve, 5 * 60 * 1000));
-
-    }
-})();
 
 const express = require('express')
 const app = express()
@@ -140,6 +133,7 @@ app.get('/', (req, res) => {
     res.sendFile(__dirname + "/index.html");
 
 })
+
 app.get('/q/:query', async (req, res) => {
     let name = req.params.query.trim()
     console.log(name + " started");
@@ -172,6 +166,19 @@ app.get('/cache', async (req, res) => {
 })
 
 
-app.listen(port, () => {
+app.listen(port, async () => {
     console.log(`Example app listening at http://localhost:${port}`)
+
+    browser = await puppeteer.launch(launchOptionsH);
+    // page = await browser.newPage();
+    [page] = await browser.pages();
+
+
+    (async function () {
+        while (true) {
+            await createSchedules()
+            await new Promise(resolve => setTimeout(resolve, 5 * 60 * 1000));
+
+        }
+    })();
 })
