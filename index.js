@@ -1,9 +1,10 @@
-// const puppeteer = require('puppeteer-core');
-const puppeteer = require('puppeteer');
+const puppeteer = require('puppeteer-core');
+const axios = require('axios').default;
+// const puppeteer = require('puppeteer');
 let dict = {};
 let namesVip = ["THANA SINGH", "HARJOT SINGH", "PRINCE GORAYA"]
 let launchOptions = {
-    headless: false,
+    // headless: false,
     executablePath: 'C:/Program Files/Google/Chrome/Application/chrome.exe',
     DuserDataDir: 'C:/Users/vky/Documents/temp/chrome',
     args: [
@@ -17,11 +18,9 @@ let launchOptionsH = {
         '--disable-setuid-sandbox',
     ],
 };
-let ggx = `
-    https://docs.google.com/spreadsheets/u/0/d/1gPElP_uBKFwGkVr3eW1LxVk_nEZrN948XSZcm0q-Pio/preview/sheet?gid=446426204
-    `
+
 let gg = `
-    https://docs.google.com/spreadsheets/u/0/d/1gPElP_uBKFwGkVr3eW1LxVk_nEZrN948XSZcm0q-Pio/preview/sheet?gid=1853312050
+    https://docs.google.com/spreadsheets/u/0/d/1gPElP_uBKFwGkVr3eW1LxVk_nEZrN948XSZcm0q-Pio/preview/sheet?gid=836036561
     `
 
 let browser, page;
@@ -29,9 +28,6 @@ let browser, page;
 // let page = await browser.newPage();
 
 const getSchedule = async function (name) {
-
-
-
     await page.goto(gg);
     await page.waitForTimeout(1000)
     canbasX = await page.evaluate((name) => {
@@ -62,6 +58,7 @@ const getSchedule = async function (name) {
         script.onload = function () {
             html2canvas(document.querySelector("tbody")).then(oldCanvas => {
                 let DayWidth = 2641, elementHeight = 270, offset = 748
+                // let DayWidth = 2641, elementHeight = 270, offset = 758
 
                 var canvas = document.createElement('canvas');
                 var context = canvas.getContext('2d');
@@ -81,6 +78,22 @@ const getSchedule = async function (name) {
                 context.drawImage(oldCanvas, -(offset + DayWidth * 6), elementHeight * 6);
                 context.drawImage(oldCanvas, -(offset + DayWidth * 7), elementHeight * 7);
 
+                var currentdate = new Date();
+                var datetime = "Last Sync: " + currentdate.getDate() + "/"
+                    + (currentdate.getMonth() + 1) + "/"
+                    + currentdate.getFullYear() + " @ "
+                    + currentdate.getHours() + ":"
+                    + currentdate.getMinutes()
+                // + ":" + currentdate.getSeconds();
+                // context.font = '48px serif';
+                // context.fillText("datetime", 10, 50); 
+                // context.rect(0, elementHeight * 7, DayWidth, 200);
+                // context.fillStyle = "#435a6b";
+                // context.fill();
+
+                context.font = 'italic 20pt Calibri';
+                context.fillStyle = "black";
+                context.fillText(datetime, 50, 50);
 
                 canvas.style.position = "absolute";
                 canvas.style.top = "598px";
@@ -104,15 +117,29 @@ const getSchedule = async function (name) {
 };
 
 async function createSchedules() {
-
     for (const name of namesVip) {
-        console.log("AUTO: started -" + name + "  ");
+        console.log("AUTO: started -" + name + " at  " + new Date().getHours() + ":" + new Date().getMinutes());
 
         let sch = await getSchedule(name)
         dict[name] = {
             time: +Date.now(),
-            img: '<img src="' + sch + '" />'
+            img: '<img src="' + sch + '" />',
+            imgX: '<img src="' + sch + '" />'
         };
+
+        // axios.post('http://localhost:3001/upload', {
+        axios.post('https://cuadrantex.openode.dev/upload', {
+            name: name,
+            // img: '<img src="' + sch + '" />',
+            img: sch,
+            time: new Date().getHours() + ":" + new Date().getMinutes()
+        })
+            .then(function (response) {
+                // console.log(response);
+            })
+            .catch(function (error) {
+                console.log(error);
+            });
 
         console.log("AUTO: done - " + name + "  ");
 
@@ -123,7 +150,7 @@ async function createSchedules() {
 
 const express = require('express')
 const app = express()
-const port = process.env.PORT || 3000
+const port = process.env.PORT || 3003
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 // app.use(express.static('public'))
@@ -134,30 +161,32 @@ app.get('/', (req, res) => {
 
 })
 
-app.get('/q/:query', async (req, res) => {
-    let name = req.params.query.trim()
-    console.log(name + " started");
+// app.get('/q/:query', async (req, res) => {
+//     let name = req.params.query.trim()
+//     console.log(name + " started");
 
-    // res.setHeader('Content-Type', 'image/png');
-    // res.sendFile(canbas)
-    let sch = await getSchedule(name)
-    dict[name] = {
-        time: +Date.now(),
-        img: '<img src="' + sch + '" />'
-    };
+//     // res.setHeader('Content-Type', 'image/png');
+//     // res.sendFile(canbas)
+//     let sch = await getSchedule(name)
+//     dict[name] = {
+//         time: +Date.now(),
+//         img: '<img src="' + sch + '" />'
+//     };
 
-    // res.send('<img src="' + sch + '" />')
-    res.send('done')
-    console.log(name + " done");
+//     // res.send('<img src="' + sch + '" />')
+//     res.send('done')
+//     console.log(name + " done");
 
-})
+// })
 app.get('/cache/:query', async (req, res) => {
     let name = req.params.query.trim()
     if (dict[name])
-        res.send(dict[name].img)
+        // res.send()
+        res.json({
+            html: dict[name].img
+        })
     else
         res.send("NOT FOUND")
-
 
 })
 
@@ -169,16 +198,17 @@ app.get('/cache', async (req, res) => {
 app.listen(port, async () => {
     console.log(`Example app listening at http://localhost:${port}`)
 
-    browser = await puppeteer.launch(launchOptionsH);
+    browser = await puppeteer.launch(launchOptions);
     // page = await browser.newPage();
     [page] = await browser.pages();
+    page.setDefaultNavigationTimeout(0);
 
 
     (async function () {
         while (true) {
             await createSchedules()
-            await new Promise(resolve => setTimeout(resolve, 5 * 60 * 1000));
-
+            await new Promise(resolve => setTimeout(resolve, 0.7 * 60 * 60 * 1000));
+            console.log(Date());
         }
     })();
 })
