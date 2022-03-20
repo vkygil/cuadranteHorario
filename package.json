@@ -10,6 +10,8 @@
     "dependencies": {
         "express": "latest",
         "puppeteer": "latest",
+        "axios": "latest",
+        "sharp": "latest",
         "socket.io": "^4.4.0"
     }
 }

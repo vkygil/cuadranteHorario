@@ -1,9 +1,12 @@
-const puppeteer = require('puppeteer-core');
+// const puppeteer = require('puppeteer-core');
+const puppeteer = require('puppeteer');
 const axios = require('axios').default;
+const sharp = require('sharp');
+
 // const puppeteer = require('puppeteer');
 let dict = {};
 let namesVip = ["THANA SINGH", "HARJOT SINGH", "PRINCE GORAYA"]
-let launchOptions = {
+let launchOptionsX = {
     // headless: false,
     executablePath: 'C:/Program Files/Google/Chrome/Application/chrome.exe',
     DuserDataDir: 'C:/Users/vky/Documents/temp/chrome',
@@ -12,7 +15,7 @@ let launchOptions = {
         '--disable-setuid-sandbox',
     ],
 };
-let launchOptionsH = {
+let launchOptions = {
     args: [
         '--no-sandbox',
         '--disable-setuid-sandbox',
@@ -20,7 +23,7 @@ let launchOptionsH = {
 };
 
 let gg = `
-    https://docs.google.com/spreadsheets/u/0/d/1gPElP_uBKFwGkVr3eW1LxVk_nEZrN948XSZcm0q-Pio/preview/sheet?gid=836036561
+    https://docs.google.com/spreadsheets/u/0/d/1gPElP_uBKFwGkVr3eW1LxVk_nEZrN948XSZcm0q-Pio/preview/sheet?gid=647038523
     `
 
 let browser, page;
@@ -30,7 +33,11 @@ let browser, page;
 const getSchedule = async function (name) {
     await page.goto(gg);
     await page.waitForTimeout(1000)
+    await page.addStyleTag({ content: '.ritz .waffle .s12 {font-size: 9pt}' })
+    await page.addStyleTag({ content: '.ritz .waffle .s13 {font-size: 9pt}' })
+
     canbasX = await page.evaluate((name) => {
+
         document.body.style.background = 'yellow';
         const whiteList = ["SEMANA", "BARCELONA", "REPARTIDOR", name];
         const blackList = ["BARCELONA SUR (JE)", "BARCELONA CENTRO"];
@@ -56,8 +63,9 @@ const getSchedule = async function (name) {
 
         document.head.appendChild(script); //or something of the likes
         script.onload = function () {
+
             html2canvas(document.querySelector("tbody")).then(oldCanvas => {
-                let DayWidth = 2641, elementHeight = 270, offset = 748
+                let DayWidth = 2641, elementHeight = 270, offset = 768
                 // let DayWidth = 2641, elementHeight = 270, offset = 758
 
                 var canvas = document.createElement('canvas');
@@ -65,7 +73,7 @@ const getSchedule = async function (name) {
 
                 canvas.width = DayWidth;
                 canvas.id = "canvasTT"
-                canvas.height = oldCanvas.height * 10;
+                canvas.height = oldCanvas.height * 9;
                 context.fillStyle = "white";
 
                 // let DayWidth = 2479, elementHeight = 250, offset = 940
@@ -121,10 +129,16 @@ async function createSchedules() {
         console.log("AUTO: started -" + name + " at  " + new Date().getHours() + ":" + new Date().getMinutes());
 
         let sch = await getSchedule(name)
+
+        sch = sch.replace("data:image/png;base64,", "")
+        let buff = await sharp(Buffer.from(sch, 'base64'))
+            .webp({ lossless: true })
+            .toBuffer();
+        sch = "data:image/webp;base64," + Buffer.from(buff).toString('base64')
+
         dict[name] = {
             time: +Date.now(),
             img: '<img src="' + sch + '" />',
-            imgX: '<img src="' + sch + '" />'
         };
 
         // axios.post('http://localhost:3001/upload', {
@@ -158,26 +172,8 @@ app.use(express.static(__dirname + '/public'));
 
 app.get('/', (req, res) => {
     res.sendFile(__dirname + "/index.html");
-
 })
 
-// app.get('/q/:query', async (req, res) => {
-//     let name = req.params.query.trim()
-//     console.log(name + " started");
-
-//     // res.setHeader('Content-Type', 'image/png');
-//     // res.sendFile(canbas)
-//     let sch = await getSchedule(name)
-//     dict[name] = {
-//         time: +Date.now(),
-//         img: '<img src="' + sch + '" />'
-//     };
-
-//     // res.send('<img src="' + sch + '" />')
-//     res.send('done')
-//     console.log(name + " done");
-
-// })
 app.get('/cache/:query', async (req, res) => {
     let name = req.params.query.trim()
     if (dict[name])
@@ -186,7 +182,10 @@ app.get('/cache/:query', async (req, res) => {
             html: dict[name].img
         })
     else
-        res.send("NOT FOUND")
+        res.json({
+            htmlx: '<video controls="" autoplay="" name="media"><source src="https://i.imgur.com/w80S1jj.mp4" type="video/mp4"></video>'
+            , html: '<video autoplay="" name="media" style=" width: 100%; "><source src="https://i.imgur.com/w80S1jj.mp4" type="video/mp4"></video>'
+        })
 
 })
 
